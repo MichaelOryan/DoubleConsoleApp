@@ -13,7 +13,7 @@ void PromptValidNumberRange(const T min, const T max, std::ostream & out = std::
 void RemoveLine(std::istream & in = std::cin);
 
 template<class T>
-T ReadIntInRange(const T min = std::numeric_limits<T>::min(),
+T ReadNumberInRange(const T min = std::numeric_limits<T>::min(),
           const T max = std::numeric_limits<T>::max(),
           std::istream & in = std::cin);
 
@@ -21,23 +21,23 @@ T ReadIntInRange(const T min = std::numeric_limits<T>::min(),
 // Implementations
 
 template<class T>
-T ReadIntInRange(const T min, const T max, std::istream & in) {
+T ReadNumberInRange(const T min, const T max, std::istream & in) {
     T number;
-    
+
     in >> number;
     bool read_number_succeeded = in.good();
-    
+
     while (!read_number_succeeded || !IsInRange(number, min, max)) {
         in.clear();
-        
+
         RemoveLine(in);
-        
+
         PromptValidNumberRange(min, max);
 
         in >> number;
         read_number_succeeded = in.good();
     }
-    
+
     return number;
 }
 

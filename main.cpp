@@ -30,7 +30,7 @@ void ReadAndDoubleNumber(std::istream & in, std::ostream & out) {
         T minimum_number = HalveNumber(std::numeric_limits<T>::min());
         T maximum_number = HalveNumber(std::numeric_limits<T>::max());
 
-        T number = ReadIntInRange(minimum_number, maximum_number, in);
+        T number = ReadNumberInRange(minimum_number, maximum_number, in);
         T double_number = DoubleNumber(number);
 
         OutputDoubleNumber(double_number, out);
