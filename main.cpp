@@ -1,58 +1,29 @@
 #include <iostream>
 #include <stdexcept>
-#include "numbers.h"
 #include "io_utils.h"
+#include <string>
+#include <sstream>
+#include "calculator.h"
 
 // Function prototypes
 
-template<class T>
-void OutputDoubleNumber(const T number, std::ostream & out = std::cout);
-
-void PromptUserForNumber(std::ostream & out = std::cout);
-
-template<class T>
-void ReadAndDoubleNumber(std::istream & in = std::cin,
-                         std::ostream & out = std::cout);
-
 // Function Implementations
 
-int main() {
-    ReadAndDoubleNumber<long long int>(std::cin, std::cout);
+int main(int argc, char** argv) {
+
+    SetMaxSignificantDigits(std::cout);
+
+    std::string expression = ReadLine(std::cin);
+
+    std::stringstream with_white_spaces(expression);
+
+    std::stringstream no_white_spaces;
+
+    RemoveWhiteSpaces(with_white_spaces, no_white_spaces);
+
+    Token token = Evaluate(no_white_spaces);
+
+    PrintValue(token, std::cout);
 
     return 0;
-}
-
-template<class T>
-void ReadAndDoubleNumber(std::istream & in, std::ostream & out) {
-    try {
-        PromptUserForNumber(out);
-
-        T minimum_number = HalveNumber(std::numeric_limits<T>::min());
-        T maximum_number = HalveNumber(std::numeric_limits<T>::max());
-
-        T number = ReadNumberInRange(minimum_number, maximum_number, in);
-        T double_number = DoubleNumber(number);
-
-        OutputDoubleNumber(double_number, out);
-    }
-    catch(std::runtime_error e) {
-        std::cerr << e.what() << std::endl;
-    }
-    catch(std::exception e) {
-        std::cerr << e.what() << std::endl;
-    }
-    catch(...) {
-        std::cerr << "Unknown Error" << std::endl;
-    }
-
-}
-
-
-void PromptUserForNumber(std::ostream & out) {
-    out << "Enter a number to double: ";
-}
-
-template<class T>
-void OutputDoubleNumber(const T number, std::ostream & out) {
-    out << "Double your number is " << number << std::endl;
 }

@@ -4,6 +4,9 @@
 #include <string>
 #include <limits>
 #include <iostream>
+#include <sstream>
+#include "calculator.h"
+#include <iomanip>
 
 // Prototypes
 
@@ -17,34 +20,22 @@ T ReadNumberInRange(const T min = std::numeric_limits<T>::min(),
           const T max = std::numeric_limits<T>::max(),
           std::istream & in = std::cin);
 
+void ArrayToStream(int size, char ** array, std::stringstream & out);
+
+void RemoveWhiteSpaces(std::stringstream & in, std::stringstream & out);
 
 // Implementations
 
 template<class T>
-T ReadNumberInRange(const T min, const T max, std::istream & in) {
-    T number;
-
-    in >> number;
-    bool read_number_succeeded = in.good();
-
-    while (!read_number_succeeded || !IsInRange(number, min, max)) {
-        in.clear();
-
-        RemoveLine(in);
-
-        PromptValidNumberRange(min, max);
-
-        in >> number;
-        read_number_succeeded = in.good();
-    }
-
-    return number;
-}
+T ReadNumberInRange(const T min, const T max, std::istream & in);
 
 template<class T>
-void PromptValidNumberRange(const T min, const T max, std::ostream & out) {
-    out << "Please enter a number between ";
-    out << min << " and " << max << ": ";
-}
+void PromptValidNumberRange(const T min, const T max, std::ostream & out);
+
+void SetMaxSignificantDigits(std::ostream & out);
+
+std::string ReadLine(std::istream & in);
+
+void PrintValue(Token token, std::ostream & out);
 
 #endif
