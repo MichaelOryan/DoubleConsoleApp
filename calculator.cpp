@@ -24,18 +24,10 @@ char ReadNextNonWhiteSpaceCharacter(std::stringstream & in) {
 
 void ReadDigits(std::stringstream & in, std::stringstream & out) {
 
-    char c;
-    c = ReadNextNonWhiteSpaceCharacter(in);
-
-    while(!in.eof() && IsDigit(c)) {
+    while(IsDigit(in.peek())) {
+        char c;
+        in >> c;
         out << c;
-        c = ReadNextNonWhiteSpaceCharacter(in);
-    }
-
-    // Might accidently extract a non digit, read char not read digit above
-    // Return to stream if there was a read (ie; not eof)
-    if(!in.eof() && !IsDigit(c)) {
-      in.putback(c);
     }
 }
 
