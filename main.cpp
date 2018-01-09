@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdexcept>
 #include "io_utils.h"
 #include <string>
 #include <sstream>
@@ -15,15 +14,9 @@ int main(int argc, char** argv) {
 
     std::string expression = ReadLine(std::cin);
 
-    std::stringstream with_white_spaces(expression);
+    calculator::Decimal result = calculator::Evaluate(expression);
 
-    std::stringstream no_white_spaces;
-
-    RemoveWhiteSpaces(with_white_spaces, no_white_spaces);
-
-    Token token = Evaluate(no_white_spaces);
-
-    PrintValue(token, std::cout);
+    std::cout << result << std::endl;;
 
     return 0;
 }

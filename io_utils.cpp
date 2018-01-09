@@ -1,15 +1,9 @@
 #include "io_utils.h"
+#include <iomanip>
+#include <sstream>
+#include <string>
 
-void RemoveLine(std::istream & in) {
-    std::string ignored_chars;
-    getline(in, ignored_chars);
-}
-
-void ArrayToStream(int size, char ** array, std::stringstream & out) {
-    for(int index = 0; index < size; index++) {
-        out << array[index];
-    }
-}
+void RemoveWhiteSpaces(std::stringstream & in, std::stringstream & out);
 
 void RemoveWhiteSpaces(std::stringstream & in, std::stringstream & out) {
     char c;
@@ -20,31 +14,11 @@ void RemoveWhiteSpaces(std::stringstream & in, std::stringstream & out) {
     }
 }
 
-template<class T>
-T ReadNumberInRange(const T min, const T max, std::istream & in) {
-    T number;
-
-    in >> number;
-    bool read_number_succeeded = in.good();
-
-    while (!read_number_succeeded || !IsInRange(number, min, max)) {
-        in.clear();
-
-        RemoveLine(in);
-
-        PromptValidNumberRange(min, max);
-
-        in >> number;
-        read_number_succeeded = in.good();
-    }
-
-    return number;
-}
-
-template<class T>
-void PromptValidNumberRange(const T min, const T max, std::ostream & out) {
-    out << "Please enter a number between ";
-    out << min << " and " << max << ": ";
+std::string RemoveWhiteSpaces(std::string in) {
+    std::stringstream with_white_spaces(in);
+    std::stringstream no_white_spaces;
+    RemoveWhiteSpaces(with_white_spaces, no_white_spaces);
+    return no_white_spaces.str();
 }
 
 void SetMaxSignificantDigits(std::ostream & out) {
@@ -55,13 +29,4 @@ std::string ReadLine(std::istream & in) {
     std::string line;
     getline(in, line);
     return line;
-}
-
-void PrintValue(Token token, std::ostream & out) {
-    switch(token.type)
-    {
-        case TOKEN_DECIMAL: std::cout << token.value.decimalNumber << std::endl; break;
-        case TOKEN_OPERATOR: std::cout << token.value.operatorToken << std::endl; break;
-        case TOKEN_INTEGER: std::cout << token.value.integerNumber << std::endl; break;
-    }
 }
