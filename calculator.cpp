@@ -21,8 +21,9 @@ bool IsGreaterPrecidence(const Token &a, const Token &b);
 bool IsNextDigit(std::stringstream &in);
 bool IsOperand(const Token &token);
 bool IsTokenNumber(const Token &token);
-Token MakeDecimalToken(std::stringstream &ss_token, std::stringstream &in);
-Token MakeIntegerToken(std::stringstream &ss_token);
+Token MakeDecimalToken(std::stringstream &number, std::stringstream &in);
+Token MakeIntegerToken(std::stringstream &number);
+Token MakeNumberToken(std::stringstream &in);
 Token MakeOperatorToken(std::stringstream &in);
 std::queue<Token> MakePostFix(std::vector<Token> tokens);
 Operatator MapCharToOperatorToken(const char &c);
@@ -35,15 +36,17 @@ void PushOperatorsToOutput(std::stack<Token> &operators, std::queue<Token> &outp
 void ReadDigits(std::stringstream &in, std::stringstream &out);
 Token ReadToken(std::stringstream &in);
 Token Subtract(Token lhs, const Token &rhs);
+Token TakeFront(std::queue<Token> & queue);
+Token TakeTop(std::stack<Token> & stack);
 
 Decimal Evaluate(std::string &expression)
 {
-
     std::vector<Token> tokens = ExtractTokens(expression);
 
     std::queue<Token> postFix = MakePostFix(tokens);
 
     Token result = PostFixEvaluation(postFix);
+
     return result.value.decimalNumber;
 }
 
@@ -55,30 +58,21 @@ std::vector<Token> ExtractTokens(std::string &expression)
     std::vector<Token> tokens;
     while (!expression_stream.eof())
     {
-        tokens.push_back(ReadToken(expression_stream));
+        Token token = ReadToken(expression_stream);
+        tokens.push_back(token);
     }
     return tokens;
 }
 
 Token ReadToken(std::stringstream &in)
 {
-
-    std::stringstream ss_token;
-
-    if (!IsNextDigit(in))
+    if (IsNextDigit(in))
     {
-        return MakeOperatorToken(in);
-    }
-
-    ReadDigits(in, ss_token);
-
-    if (IsDecimalPointNext(in))
-    {
-        return MakeDecimalToken(ss_token, in);
+        return MakeNumberToken(in);
     }
     else
     {
-        return MakeIntegerToken(ss_token);
+        return MakeOperatorToken(in);
     }
 }
 
@@ -91,6 +85,72 @@ bool IsDigit(const char &c)
 {
     return c >= '0' && c <= '9';
 }
+
+Token MakeNumberToken(std::stringstream &in)
+{
+    std::stringstream number;
+
+    ReadDigits(in, number);
+
+    if (IsDecimalPointNext(in))
+    {
+        return MakeDecimalToken(number, in);
+    }
+    else
+    {
+        return MakeIntegerToken(number);
+    }
+}
+
+void ReadDigits(std::stringstream &in, std::stringstream &out)
+{
+    while (!in.eof() && IsDigit(in.peek()))
+    {
+        char c;
+        in >> c;
+        out << c;
+    }
+}
+
+bool IsDecimalPointNext(std::stringstream &in)
+{
+    return IsDecimalPoint(in.peek());
+}
+
+bool IsDecimalPoint(const char &c)
+{
+    return c == '.';
+}
+
+Token MakeDecimalToken(std::stringstream &number, std::stringstream &in)
+{
+    Token token;
+    token.type = TOKEN_DECIMAL;
+
+    MoveDecimalNumbers(in, number);
+
+    number >> token.value.decimalNumber;
+    return token;
+}
+
+// Namimg bad and possibly does too many things
+void MoveDecimalNumbers(std::stringstream &in, std::stringstream &out)
+{
+    // Read in decimal
+    char c;
+    in >> c;
+    out << c;
+    ReadDigits(in, out);
+}
+
+Token MakeIntegerToken(std::stringstream &number)
+{
+    Token token;
+    token.type = TOKEN_DECIMAL;
+    number >> token.value.decimalNumber;
+    return token;
+}
+
 
 Token MakeOperatorToken(std::stringstream &in)
 {
@@ -123,56 +183,6 @@ Operatator MapCharToOperatorToken(const char &c)
     }
 }
 
-void ReadDigits(std::stringstream &in, std::stringstream &out)
-{
-
-    while (!in.eof() && IsDigit(in.peek()))
-    {
-        char c;
-        in >> c;
-        out << c;
-    }
-}
-
-bool IsDecimalPointNext(std::stringstream &in)
-{
-    return IsDecimalPoint(in.peek());
-}
-
-bool IsDecimalPoint(const char &c)
-{
-    return c == '.';
-}
-
-Token MakeDecimalToken(std::stringstream &ss_token, std::stringstream &in)
-{
-    Token token;
-    token.type = TOKEN_DECIMAL;
-
-    MoveDecimalNumbers(in, ss_token);
-
-    ss_token >> token.value.decimalNumber;
-    return token;
-}
-
-// Namimg bad and possibly does too many things
-void MoveDecimalNumbers(std::stringstream &in, std::stringstream &out)
-{
-    // Read in decimal
-    char c;
-    in >> c;
-    out << c;
-    ReadDigits(in, out);
-}
-
-Token MakeIntegerToken(std::stringstream &ss_token)
-{
-    Token token;
-    token.type = TOKEN_DECIMAL;
-    ss_token >> token.value.decimalNumber;
-    return token;
-}
-
 std::queue<Token> MakePostFix(std::vector<Token> tokens)
 {
     std::stack<Token> operators;
@@ -184,8 +194,8 @@ std::queue<Token> MakePostFix(std::vector<Token> tokens)
         {
             output.push(token);
         }
-        else
-        { // Token is operator
+        else // Token is operator
+        {
             PushGreaterPrecidenceToOutput(output, operators, token);
             operators.push(token);
         }
@@ -203,10 +213,16 @@ void PushGreaterPrecidenceToOutput(std::queue<Token> &output, std::stack<Token> 
 {
     while (!operators.empty() && IsGreaterPrecidence(operators.top(), token))
     {
-        Token token = operators.top();
-        operators.pop();
+        Token token = TakeTop(operators);
         output.push(token);
     }
+}
+
+Token TakeTop(std::stack<Token> & stack) {
+    Token token;
+    token = stack.top();
+    stack.pop();
+    return token;
 }
 
 bool IsGreaterPrecidence(const Token &a, const Token &b)
@@ -247,19 +263,15 @@ Token PostFixEvaluation(std::queue<Token> PostFix)
 
     while (!PostFix.empty())
     {
-        token = PostFix.front();
-        PostFix.pop();
+        token = TakeFront(PostFix);
         if (IsOperand(token))
         {
             operands.push(token);
         }
         else
         { // Evaluate operator with operands, Maybe make a function?
-            Token rhs = operands.top();
-            operands.pop();
-
-            Token lhs = operands.top();
-            operands.pop();
+            Token rhs = TakeTop(operands);
+            Token lhs = TakeTop(operands);
 
             Token op = token;
 
@@ -269,6 +281,13 @@ Token PostFixEvaluation(std::queue<Token> PostFix)
     }
     Token answer = operands.top();
     return answer;
+}
+
+Token TakeFront(std::queue<Token> & queue) {
+    Token token;
+    token = queue.front();
+    queue.pop();
+    return token;
 }
 
 bool IsOperand(const Token &token)
