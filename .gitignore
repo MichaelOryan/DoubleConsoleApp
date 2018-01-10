@@ -31,3 +31,7 @@
 *.out
 *.app
 calc
+
+#visualcode
+#update to reflect specific visualcode .json files if for some reason json files are needed
+*.json

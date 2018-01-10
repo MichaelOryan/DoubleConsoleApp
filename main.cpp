@@ -8,7 +8,8 @@
 
 // Function Implementations
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
 
     SetMaxSignificantDigits(std::cout);
 
@@ -16,7 +17,7 @@ int main(int argc, char** argv) {
 
     calculator::Decimal result = calculator::Evaluate(expression);
 
-    std::cout << result << std::endl;;
+    std::cout << result << std::endl;
 
     return 0;
 }

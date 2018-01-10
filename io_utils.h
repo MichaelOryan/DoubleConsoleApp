@@ -4,10 +4,8 @@
 #include <string>
 #include <sstream>
 
-std::string ReadLine(std::istream & in);
+std::string ReadLine(std::istream &in);
 std::string RemoveWhiteSpaces(std::string in);
-void SetMaxSignificantDigits(std::ostream & out);
-
-
+void SetMaxSignificantDigits(std::ostream &out);
 
 #endif
