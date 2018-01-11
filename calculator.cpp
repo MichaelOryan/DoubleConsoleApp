@@ -133,7 +133,8 @@ Token MakeDecimalToken(std::stringstream &number, std::stringstream &in)
     return token;
 }
 
-// Namimg bad and possibly does too many things
+// Naming bad and possibly does too many things
+// Maybe ReadFractionDigits
 void MoveDecimalNumbers(std::stringstream &in, std::stringstream &out)
 {
     // Read in decimal
@@ -168,16 +169,12 @@ OperatatorType MapCharToOperatorType(const char &c)
     {
     case ADDITION_OPERATOR:
         return ADDITION;
-        break;
     case SUBTRACTION_OPERATOR:
         return SUBTRACTION;
-        break;
     case MULTIPLICATION_OPERATOR:
         return MULTIPLICATION;
-        break;
     case DIVISION_OPERATOR:
         return DIVISION;
-        break;
     default:
         return ADDITION;
     }
@@ -301,16 +298,12 @@ Token Evaluate(const Token &lhs, const Token &Op, const Token &rhs)
     {
     case ADDITION:
         return Add(lhs, rhs);
-        break;
     case SUBTRACTION:
         return Subtract(lhs, rhs);
-        break;
     case MULTIPLICATION:
         return Multiply(lhs, rhs);
-        break;
     case DIVISION:
         return Divide(lhs, rhs);
-        break;
     default:
         return Add(lhs, rhs);
     }
