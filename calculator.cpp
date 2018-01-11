@@ -2,9 +2,9 @@
 #include <stack>
 #include <vector>
 #include <queue>
-#include "calculator.h"
 #include <iostream>
 #include "io_utils.h"
+#include "calculator.h"
 
 namespace calculator
 {
