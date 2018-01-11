@@ -26,7 +26,7 @@ Token MakeIntegerToken(std::stringstream &number);
 Token MakeNumberToken(std::stringstream &in);
 Token MakeOperatorToken(std::stringstream &in);
 std::queue<Token> MakePostFix(std::vector<Token> tokens);
-Operatator MapCharToOperatorToken(const char &c);
+OperatatorType MapCharToOperatorType(const char &c);
 int MapTokenToPrecidence(const Token &a);
 void MoveDecimalNumbers(std::stringstream &in, std::stringstream &out);
 Token Multiply(Token lhs, const Token &rhs);
@@ -47,7 +47,7 @@ Decimal Evaluate(std::string &expression)
 
     Token result = PostFixEvaluation(postFix);
 
-    return result.value.decimalNumber;
+    return result.value.decimalValue;
 }
 
 std::vector<Token> ExtractTokens(std::string &expression)
@@ -129,7 +129,7 @@ Token MakeDecimalToken(std::stringstream &number, std::stringstream &in)
 
     MoveDecimalNumbers(in, number);
 
-    number >> token.value.decimalNumber;
+    number >> token.value.decimalValue;
     return token;
 }
 
@@ -147,7 +147,7 @@ Token MakeIntegerToken(std::stringstream &number)
 {
     Token token;
     token.type = TOKEN_DECIMAL;
-    number >> token.value.decimalNumber;
+    number >> token.value.decimalValue;
     return token;
 }
 
@@ -158,11 +158,11 @@ Token MakeOperatorToken(std::stringstream &in)
     token.type = TOKEN_OPERATOR;
     char c;
     in >> c;
-    token.value.operatorToken = MapCharToOperatorToken(c);
+    token.value.operatorType = MapCharToOperatorType(c);
     return token;
 }
 
-Operatator MapCharToOperatorToken(const char &c)
+OperatatorType MapCharToOperatorType(const char &c)
 {
     switch (c)
     {
@@ -232,7 +232,7 @@ bool IsGreaterPrecidence(const Token &a, const Token &b)
 
 int MapTokenToPrecidence(const Token &a)
 {
-    switch (a.value.operatorToken)
+    switch (a.value.operatorType)
     {
     case MULTIPLICATION_OPERATOR:
         return MULTIPLICATION_PRECEDENCE;
@@ -297,7 +297,7 @@ bool IsOperand(const Token &token)
 
 Token Evaluate(const Token &lhs, const Token &Op, const Token &rhs)
 {
-    switch (Op.value.operatorToken)
+    switch (Op.value.operatorType)
     {
     case ADDITION:
         return Add(lhs, rhs);
@@ -318,25 +318,25 @@ Token Evaluate(const Token &lhs, const Token &Op, const Token &rhs)
 
 Token Add(Token lhs, const Token &rhs)
 {
-    lhs.value.decimalNumber = lhs.value.decimalNumber + rhs.value.decimalNumber;
+    lhs.value.decimalValue = lhs.value.decimalValue + rhs.value.decimalValue;
     return lhs;
 }
 
 Token Subtract(Token lhs, const Token &rhs)
 {
-    lhs.value.decimalNumber = lhs.value.decimalNumber - rhs.value.decimalNumber;
+    lhs.value.decimalValue = lhs.value.decimalValue - rhs.value.decimalValue;
     return lhs;
 }
 
 Token Multiply(Token lhs, const Token &rhs)
 {
-    lhs.value.decimalNumber = lhs.value.decimalNumber * rhs.value.decimalNumber;
+    lhs.value.decimalValue = lhs.value.decimalValue * rhs.value.decimalValue;
     return lhs;
 }
 
 Token Divide(Token lhs, const Token &rhs)
 {
-    lhs.value.decimalNumber = lhs.value.decimalNumber / rhs.value.decimalNumber;
+    lhs.value.decimalValue = lhs.value.decimalValue / rhs.value.decimalValue;
     return lhs;
 }
 }

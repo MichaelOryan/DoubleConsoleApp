@@ -9,7 +9,7 @@ enum TokenType
     TOKEN_DECIMAL,
     TOKEN_OPERATOR
 };
-enum Operatator
+enum OperatatorType
 {
     CLOSING_BRACE,
     OPENING_BRACE,
@@ -35,8 +35,8 @@ typedef long long int Integer;
 typedef long double Decimal;
 
 union Value {
-    Decimal decimalNumber;
-    Operatator operatorToken;
+    Decimal decimalValue;
+    OperatatorType operatorType;
 };
 
 struct Token
