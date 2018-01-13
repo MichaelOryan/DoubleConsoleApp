@@ -32,7 +32,7 @@ const unsigned int SUBTRACTION_PRECEDENCE = 10;
 const unsigned int ADDITION_PRECEDENCE = 10;
 
 typedef long long int Integer;
-typedef long double Decimal;
+typedef double Decimal;
 
 union Value {
     Decimal decimalValue;
