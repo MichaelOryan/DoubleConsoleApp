@@ -8,6 +8,8 @@
 
 // Function Implementations
 
+// Testing merging
+
 int main(int argc, char **argv)
 {
 
