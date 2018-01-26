@@ -180,6 +180,19 @@ OperatatorType MapCharToOperatorType(const char &c)
     }
 }
 
+// TODO: Function name needs review
+void AddTokenToOutputOrOperators(Token token, std::queue<Token> & output, std::stack<Token> & operators){
+    if (IsTokenNumber(token))
+    {
+        output.push(token);
+    }
+    else // Token is operator
+    {
+        PushGreaterPrecidenceToOutput(output, operators, token);
+        operators.push(token);
+    }
+}
+
 std::queue<Token> MakePostFix(std::vector<Token> tokens)
 {
     std::stack<Token> operators;
@@ -187,15 +200,7 @@ std::queue<Token> MakePostFix(std::vector<Token> tokens)
 
     for (Token &token : tokens)
     {
-        if (IsTokenNumber(token))
-        {
-            output.push(token);
-        }
-        else // Token is operator
-        {
-            PushGreaterPrecidenceToOutput(output, operators, token);
-            operators.push(token);
-        }
+        AddTokenToOutputOrOperators(token, output, operators);
     }
     PushOperatorsToOutput(operators, output);
     return output;
@@ -252,6 +257,24 @@ void PushOperatorsToOutput(std::stack<Token> &operators, std::queue<Token> &outp
     }
 }
 
+// TODO: Function name needs review
+void PostFixEvaluateToken(Token token, std::stack<Token> & operands){
+    if (IsOperand(token))
+    {
+        operands.push(token);
+    }
+    else
+    { // Evaluate operator with operands, Maybe make a function?
+        Token rhs = TakeTop(operands);
+        Token lhs = TakeTop(operands);
+
+        Token op = token;
+
+        Token result = Evaluate(lhs, op, rhs);
+        operands.push(result);
+    }
+}
+
 Token PostFixEvaluation(std::queue<Token> PostFix)
 {
 
@@ -261,20 +284,7 @@ Token PostFixEvaluation(std::queue<Token> PostFix)
     while (!PostFix.empty())
     {
         token = TakeFront(PostFix);
-        if (IsOperand(token))
-        {
-            operands.push(token);
-        }
-        else
-        { // Evaluate operator with operands, Maybe make a function?
-            Token rhs = TakeTop(operands);
-            Token lhs = TakeTop(operands);
-
-            Token op = token;
-
-            Token result = Evaluate(lhs, op, rhs);
-            operands.push(result);
-        }
+        PostFixEvaluateToken(token, operands);
     }
     Token answer = operands.top();
     return answer;
